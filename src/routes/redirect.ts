@@ -54,15 +54,15 @@ const consumeDiscordId = async (state: string): Promise<string> => {
 		.from('roblox_oauth_sessions')
 		.delete()
 		.match({ state })
-		.select(`discord_user_id`)
+		.select(`discord_id`)
 		.single();
 
 	if (error || !data) {
 		console.error(error);
-		throw new ApiError(400, `Missing challenge code verifier!`);
+		throw new ApiError(400, `Missing challenge code verifier: ${error}`);
 	}
 
-	return data.discord_user_id as string;
+	return data.discord_id as string;
 };
 
 const getUserInfo = async (token: string): Promise<UserInfoResponse> => {
@@ -91,6 +91,22 @@ const revokeRefreshToken = async (refreshToken: string): Promise<void> => {
 	});
 };
 
+const linkDiscordRobloxAccounts = async (discordId: string, robloxId: string): Promise<void> => {
+	const { data, error } = await supabase
+		.from('roblox_discord_links')
+		.insert([
+			{
+				discord_id: discordId,
+				roblox_id: robloxId
+			}
+		])
+
+	if (error || !data) {
+		console.error(error);
+		throw new ApiError(400, `Accounts could not be linked: ${error}`);
+	}
+}
+
 export default router.get('/', async (req, res) => {
 	const code = req.query.code as string | undefined;
 	const state = req.query.state as string | undefined;
@@ -99,11 +115,13 @@ export default router.get('/', async (req, res) => {
 		throw new ApiError(400, `Missing code or state request query fields.`);
 	}
 
-	const discordId = consumeDiscordId(state);
+	const discordId = await consumeDiscordId(state);
 
 	const { access_token: accessToken, refresh_token: refreshToken } = await getToken(code);
 
-	const { sub: userId } = await getUserInfo(accessToken);
+	const { sub: robloxId } = await getUserInfo(accessToken);
+
+	await linkDiscordRobloxAccounts(discordId, robloxId);
 
 	res.redirect('/');
 
