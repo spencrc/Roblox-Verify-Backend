@@ -49,7 +49,7 @@ const getToken = async (code: string): Promise<TokenResponse> => {
 	return (await JSON.parse(text)) as TokenResponse;
 };
 
-const consumeDiscordId = async (state: string): Promise<string> => {
+const resolveDiscordIdFromState = async (state: string): Promise<string> => {
 	const { data, error } = await supabase
 		.from('roblox_oauth_sessions')
 		.delete()
@@ -115,11 +115,9 @@ export default router.get('/', async (req, res) => {
 		throw new ApiError(400, `Missing code or state request query fields.`);
 	}
 
-	const discordId = await consumeDiscordId(state);
-
 	const { access_token: accessToken, refresh_token: refreshToken } = await getToken(code);
-
 	const { sub: robloxId } = await getUserInfo(accessToken);
+	const discordId = await resolveDiscordIdFromState(state);
 
 	await linkDiscordRobloxAccounts(discordId, robloxId);
 
