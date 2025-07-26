@@ -28,13 +28,12 @@ const USER_INFO_URL = 'https://apis.roblox.com/oauth/v1/userinfo';
 const REVOKE_URL = 'https://apis.roblox.com/oauth/v1/token/revoke';
 
 //todo: add code_verifier to getToken params
-const getToken = async (code: string, challengeCodeVerifier: string): Promise<TokenResponse> => {
+const getToken = async (code: string): Promise<TokenResponse> => {
 	const params = new URLSearchParams();
 	params.append('client_id', ROBLOX_CLIENT_ID);
 	params.append('client_secret', ROBLOX_SECRET);
 	params.append('grant_type', 'authorization_code');
 	params.append('code', code);
-	//params.append('code_verifier', challengeCodeVerifier);
 
 	const response: Response = await fetch(TOKEN_URL, {
 		method: 'POST',
@@ -102,9 +101,13 @@ export default router.get('/', async (req, res) => {
 
 	console.log('Sucess! Re-direct page was reached!');
 
-	const codeVerifier = await consumeCodeVerifier(state);
+	//const codeVerifier = await consumeCodeVerifier(state);
+	
+	console.log('Code verifier consumed.');
 
-	const { access_token: accessToken, refresh_token: refreshToken } = await getToken(code, codeVerifier);
+	const { access_token: accessToken, refresh_token: refreshToken } = await getToken(code);
+
+	console.log("Got token!");
 
 	const { sub: userId } = await getUserInfo(accessToken);
 	console.log(userId);
