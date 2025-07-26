@@ -101,7 +101,7 @@ const linkDiscordRobloxAccounts = async (discordId: string, robloxId: string): P
 			}
 		])
 
-	if (error || !data) {
+	if (error) {
 		console.error(error);
 		throw new ApiError(400, `Accounts could not be linked: ${error}`);
 	}
