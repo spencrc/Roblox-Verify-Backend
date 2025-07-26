@@ -31,10 +31,10 @@ const REVOKE_URL = 'https://apis.roblox.com/oauth/v1/token/revoke';
 const getToken = async (code: string, challengeCodeVerifier: string): Promise<TokenResponse> => {
 	const params = new URLSearchParams();
 	params.append('client_id', ROBLOX_CLIENT_ID);
-	//params.append('client_secret', ROBLOX_SECRET);
+	params.append('client_secret', ROBLOX_SECRET);
 	params.append('grant_type', 'authorization_code');
 	params.append('code', code);
-	params.append('code_verifier', challengeCodeVerifier);
+	//params.append('code_verifier', challengeCodeVerifier);
 
 	const response: Response = await fetch(TOKEN_URL, {
 		method: 'POST',
