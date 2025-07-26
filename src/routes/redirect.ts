@@ -94,7 +94,7 @@ const revokeRefreshToken = async (refreshToken: string): Promise<void> => {
 const linkDiscordRobloxAccounts = async (discordId: string, robloxId: string, guildId: string): Promise<void> => {
 	const { data, error } = await supabase
 		.from('roblox_discord_links')
-		.insert([
+		.upsert([
 			{
 				discord_id: discordId,
 				roblox_id: robloxId,
