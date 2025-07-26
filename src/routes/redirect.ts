@@ -49,12 +49,12 @@ const getToken = async (code: string): Promise<TokenResponse> => {
 	return (await JSON.parse(text)) as TokenResponse;
 };
 
-const resolveDiscordIdFromState = async (state: string): Promise<string> => {
+const resolveDiscordInfoFromState = async (state: string): Promise<{discord_id: string, guild_id: string}> => {
 	const { data, error } = await supabase
 		.from('roblox_oauth_sessions')
 		.delete()
 		.match({ state })
-		.select(`discord_id`)
+		.select(`discord_id, guild_id`)
 		.single();
 
 	if (error || !data) {
@@ -62,7 +62,7 @@ const resolveDiscordIdFromState = async (state: string): Promise<string> => {
 		throw new ApiError(400, `Missing challenge code verifier: ${error}`);
 	}
 
-	return data.discord_id as string;
+	return data;
 };
 
 const getUserInfo = async (token: string): Promise<UserInfoResponse> => {
@@ -91,13 +91,14 @@ const revokeRefreshToken = async (refreshToken: string): Promise<void> => {
 	});
 };
 
-const linkDiscordRobloxAccounts = async (discordId: string, robloxId: string): Promise<void> => {
+const linkDiscordRobloxAccounts = async (discordId: string, robloxId: string, guildId: string): Promise<void> => {
 	const { data, error } = await supabase
 		.from('roblox_discord_links')
 		.insert([
 			{
 				discord_id: discordId,
-				roblox_id: robloxId
+				roblox_id: robloxId,
+				guild_id: guildId
 			}
 		])
 
@@ -117,9 +118,9 @@ export default router.get('/', async (req, res) => {
 
 	const { access_token: accessToken, refresh_token: refreshToken } = await getToken(code);
 	const { sub: robloxId } = await getUserInfo(accessToken);
-	const discordId = await resolveDiscordIdFromState(state);
+	const { discord_id: discordId, guild_id: guildId} = await resolveDiscordInfoFromState(state);
 
-	await linkDiscordRobloxAccounts(discordId, robloxId);
+	await linkDiscordRobloxAccounts(discordId, robloxId, guildId);
 
 	res.redirect('/');
 
