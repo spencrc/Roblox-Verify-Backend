@@ -49,12 +49,12 @@ const getToken = async (code: string): Promise<TokenResponse> => {
 	return (await JSON.parse(text)) as TokenResponse;
 };
 
-const consumeCodeVerifier = async (state: string): Promise<string> => {
+const consumeDiscordId = async (state: string): Promise<string> => {
 	const { data, error } = await supabase
 		.from('roblox_oauth_sessions')
 		.delete()
 		.match({ state })
-		.select(`code_verifier`)
+		.select(`discord_user_id`)
 		.single();
 
 	if (error || !data) {
@@ -62,7 +62,7 @@ const consumeCodeVerifier = async (state: string): Promise<string> => {
 		throw new ApiError(400, `Missing challenge code verifier!`);
 	}
 
-	return data.code_verifier as string;
+	return data.discord_user_id as string;
 };
 
 const getUserInfo = async (token: string): Promise<UserInfoResponse> => {
@@ -99,18 +99,11 @@ export default router.get('/', async (req, res) => {
 		throw new ApiError(400, `Missing code or state request query fields.`);
 	}
 
-	console.log('Sucess! Re-direct page was reached!');
-
-	//const codeVerifier = await consumeCodeVerifier(state);
-	
-	console.log('Code verifier consumed.');
+	const discordId = consumeDiscordId(state);
 
 	const { access_token: accessToken, refresh_token: refreshToken } = await getToken(code);
 
-	console.log("Got token!");
-
 	const { sub: userId } = await getUserInfo(accessToken);
-	console.log(userId);
 
 	res.redirect('/');
 
