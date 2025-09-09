@@ -26,7 +26,7 @@ If you wish to build and run this project on your own machine, please:
 6. Build the files by running `npm run build`.
 7. Finally, to start the server run `npm start`.
 
-If you wish to host this project on Vercel, please fork this repository and visit [Vercel's website](https://vercel.com/) to select your newly forked repository to be deployed.
+If you wish to host this project on Vercel, please fork this repository and visit [Vercel's website](https://vercel.com/) to select your newly forked repository to be deployed. You will need to add environment variables, and can do so by creating new variables with names that match the above `.env` file's variable's names. Of course, the values of each Vercel environmental variable should also match the corresponding `.env` file's variable's values.
 
 ## Database Setup
 
