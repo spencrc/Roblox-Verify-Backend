@@ -1,8 +1,8 @@
-# Roblox-Verify-Backend
+# Roblox-To-Discord-Backend
 
 ## Note
 
-The contents of this repository are intended to be used with its sister repository, [Roblox-Verify-Bot](https://github.com/spencrc/Roblox-Verify-Bot). However, it can be used without it but you will need to find a method to generate OAuth 2.0 links. 
+The contents of this repository are intended to be used with its sister repository, [Roblox-To-Discord-Bot](https://github.com/spencrc/Roblox-Verify-Bot). However, it can be used without it but you will need to find a method to generate OAuth 2.0 links. 
 
 ## Setup
 
