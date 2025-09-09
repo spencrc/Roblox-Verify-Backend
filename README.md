@@ -9,3 +9,20 @@ If you wish to build and run this project on your own machine, please:
 3. Finally, to start the server run `npm start`.
 
 If you wish to host this project on Vercel, please fork this repository and visit [Vercel's website](https://vercel.com/) to select your newly forked repository to be deployed.
+
+## Database Setup
+
+Please create the following tables with the following columns:
+
+- `roblox_discord_links`
+  - `discord_id`: text (primary key)
+  - `guild_id`: text
+  - `roblox_id`: text
+- `roblox_oauth_sessions`
+  - `state`: text (primary key)
+  - `discord_id`: text
+  - `expires_at`: timestamp
+  - `guild_id`: text
+- `settings`
+  - `guild_id`: text (primary key)
+  - `verify_log_channel_id`: text
